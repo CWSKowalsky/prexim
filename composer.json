@@ -1,0 +1,30 @@
+{
+  "name":"skowalsky/prexim",
+  "description": "This extension adds the possibility to export and (re-)import products and variants out of the MERCONIS shop",
+  "keywords":["merconis", "export", "import", "skowalsky", "products", "variants", "specific", "all", "contao"],
+  "type":"contao-bundle",
+  "license":"LGPL-3.0-or-later",
+  "authors":[
+    {
+      "name":"Samuel Kowalsky",
+      "homepage":"http://bytecap.net",
+      "role":"Developer"
+    }
+  ],
+  "require":{
+    "php":">=7.0",
+    "contao/core-bundle": "~4.4",
+    "leadingsystems/contao-merconis": "~4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "SKowalsky\\Prexim\\": "src"
+    },
+    "classmap": [
+      "src/Resources/contao/"
+    ]
+  },
+  "extra": {
+    "contao-manager-plugin": "SKowalsky\\Prexim\\ContaoManager\\Plugin"
+  }
+}
