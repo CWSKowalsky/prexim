@@ -13,7 +13,7 @@ class Plugin implements BundlePluginInterface
     {
         return [
             (new BundleConfig('SKowalsky\Prexim\SKowalskyPrexim'))
-                ->setReplace(['sk-discountdampaign'])
+                ->setReplace(['sk-prexim'])
                 ->setLoadAfter(['LeadingSystems\MerconisBundle\LeadingSystemsMerconisBundle'])
         ];
     }
