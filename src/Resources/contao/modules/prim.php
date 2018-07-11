@@ -81,11 +81,13 @@
 					if($key == 'lsShopProductMainImage') {
 						$nproduct[$key] = $value;
 					} else if($key == 'configurator') {
-						$id = $conn->prepare("SELECT id FROM tl_ls_shop_configurator WHERE alias='$value'")->execute()->fetchAllAssoc()[0]['id'];
-						if(isset($id)) {
-							$nproduct[$key] = $id;
-						} else {
-							array_push($import_errors, 'Couldn\'t find configurator with alias: '.$value);
+						if(isset($value)) {
+							$id = $conn->prepare("SELECT id FROM tl_ls_shop_configurator WHERE alias='$value'")->execute()->fetchAllAssoc()[0]['id'];
+							if(isset($id)) {
+								$nproduct[$key] = $id;
+							} else {
+								array_push($import_errors, 'Couldn\'t find configurator with alias: '.$value);
+							}
 						}
 					} else if($key == 'pages') {
 						$pages = unserialize($value);
@@ -134,16 +136,18 @@
 						} else {
 							array_push($import_errors, 'Couldn\'t find shop delivery info with alias: '.$value);
 						}
-					} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts'){
+					} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts') {	//TODO handle alias of products that dont exist in the db
 						$prds = unserialize($value);
 						if(sizeof($prds) > 0) {
 							$nprds = array();
 							foreach($prds as $prd) {
-								$id = $conn->prepare("SELECT id FROM tl_ls_shop_product WHERE alias='".$prd."'")->execute()->fetchAllAssoc()[0]['id'];
-								if(isset($id)) {
-									array_push($nprds, $id);
-								} else {
-									array_push($import_errors, 'Couldn\'t find '.$key.' with alias: '.$value);
+								if(isset($prd)) {
+									$id = $conn->prepare("SELECT id FROM tl_ls_shop_product WHERE alias='".$prd."'")->execute()->fetchAllAssoc()[0]['id'];
+									if(isset($id)) {
+										array_push($nprds, $id);
+									} else {
+										array_push($import_errors, 'Couldn\'t find '.$key.' with alias: '.$prd);
+									}
 								}
 							}
 							$prds = serialize($nprds);

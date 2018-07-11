@@ -2,7 +2,6 @@
 <html>
     <body>
         <div class="wrapper">
-            <h1>Produkt-Import</h1>
             <?= $this->sts; ?>
 
             <form action="" method="post" enctype="multipart/form-data" class="uploadform">
@@ -35,6 +34,8 @@
 
 .wrapper {
     padding: 10px;
+    border-radius: 5px;
+    border: 0;
 }
 
 .uploadform {
