@@ -201,7 +201,7 @@ function exportAllProducts($conn) {
 	foreach($data as $p) {
 		$product = array();
 		foreach($p as $key => $value) {
-			
+			$value = str_replace("'", "''", $value);
 			if($key == 'lsShopProductMainImage') {
 				$product[$key] = "UNHEX('".strtoupper(bin2hex($value))."')";
 			} else if($key == 'configurator') {
@@ -265,7 +265,7 @@ function exportAllVariants($conn) {
 	foreach($data as $v) {
 		$variant = array();
 		foreach($v as $key => $value) {
-			
+			$value = str_replace("'", "''", $value);
 			if($key == 'lsShopProductVariantMainImage') {
 				$variant[$key] = "UNHEX('".strtoupper(bin2hex($value))."')";
 			} else if($key == 'configurator') {
