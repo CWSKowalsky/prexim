@@ -12,7 +12,8 @@
 		}
 
 		public function checkUpload() {
-			$target_dir = "uploads/";
+			$target_dir = $_SERVER['DOCUMENT_ROOT']."uploads/";
+			if (!file_exists($target_dir)) { mkdir($target_dir, 0777, true); }
 			$target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
 			$uploadOk = 0;
 			$imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
