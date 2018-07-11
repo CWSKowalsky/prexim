@@ -20,14 +20,14 @@
 				if($imageFileType == "prex") {
 					$uploadOk = 1;
 				}
+				if($uploadOk == 1 && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+					$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen!";
+				} else {
+					$this->Template->err = "Die Datei konnte nicht hochgeladen werden.";
+				}
+				$import = file_get_contents($target_file);
+				$this->import($import);
 			}
-			if($uploadOk == 1 && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-				$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen!";
-			} else {
-				$this->Template->err = "Die Datei konnte nicht hochgeladen werden.";
-			}
-			$import = file_get_contents($target_file);
-			$this->import($import);
 		}
 
 		public function import($import) {

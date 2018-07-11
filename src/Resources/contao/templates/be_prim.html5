@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <h1>Produkt-Import</h1>
-        <?= $this->sts; ?>
+        <div class="wrapper">
+            <h1>Produkt-Import</h1>
+            <?= $this->sts; ?>
 
-        <form action="" method="post" enctype="multipart/form-data">
-            Bitte w&auml;hlen Sie eine Datei zum Hochladen aus.
-            <input type="file" name="fileToUpload" id="fileToUpload">
-            <input type="submit" value="Hochladen" name="submit">
-        </form>
+            <form action="" method="post" enctype="multipart/form-data" class="uploadform">
+                Bitte w&auml;hlen Sie eine Datei zum Hochladen aus.<br>
+                <input type="hidden" name="REQUEST_TOKEN" value="<?= REQUEST_TOKEN ?>">
+                <input type="file" name="fileToUpload" id="fileToUpload">
+                <input type="submit" value="Hochladen" name="submit">
+            </form>
 
-        <font face="Arial" color="green"><?= $this->scc; ?></font>
-        <font face="Arial" color="red"><?= $this->err; ?></font>
-
+            <font face="Arial" color="green"><?= $this->scc; ?></font>
+            <font face="Arial" color="red"><?= $this->err; ?></font>
+        </div>
     </body>
 </html>
 
-<?php
-    
+<style>
 
-?>
+.wrapper {
+    padding: 10px;
+}
+
+.uploadform {
+    margin: 20px 0 20px 0;
+}
+
+</style>
