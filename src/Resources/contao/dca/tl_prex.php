@@ -271,15 +271,6 @@ function exportAllVariants($conn) {
 			} else if($key == 'configurator') {
 				$alias = execute($conn, "SELECT alias FROM tl_ls_shop_configurator WHERE id='".$value."'")[0]['alias'];
 				$variant[$key] = $alias;
-			} else if($key == 'pages') {
-				$pages = unserialize($value);
-				$npages = array();
-				foreach($pages as $page) {
-					$alias = execute($conn, "SELECT alias FROM tl_page WHERE id='".$page."'")[0]['alias'];
-					array_push($npages, $alias);
-				}
-				$pages = serialize($npages);
-				$variant[$key] = $pages;
 			} else if($key == 'lsShopProductVariantAttributesValues') {
 				$av = unserialize($value);
 				$nav = array();

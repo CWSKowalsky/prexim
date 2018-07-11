@@ -66,21 +66,28 @@
 		}
 
 		public function runimport($importarr) {
-			$error_array = $this->importProducts($importarr['products']);
-			echo '->';
-			print_r($error_array);
+			$error_array = $this->importProductsAndVariants($importarr);
 		}
 
-		public function importProducts($productarr) {
+		public function importProductsAndVariants($importarr) {
+			$productarr = $importarr['products'];
+			$variantarr = $importarr['variants'];
+
 			$conn = \Database::getInstance();
 			$import_errors = array();
 
 			$future_ids = array();
 			$cautoincr = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
-			foreach($productarr as $product) {
-				$product['id'] = $cautoincr;
-				$future_ids[$product['alias']] = $cautoincr;
+			for($i = 0; $i < sizeof($productarr); $i++) {
+				$productarr[$i]['id'] = $cautoincr;
+				$future_ids[$productarr[$i]['alias']] = $cautoincr;
 				$cautoincr++;
+			}
+
+			$cautoincrv = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_variant';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
+			for($i = 0; $i < sizeof($variantarr); $i++) {
+				$variantarr[$i]['id'] = $cautoincrv;
+				$cautoincrv++;
 			}
 			
 			$nproducts = array();
@@ -110,7 +117,7 @@
 							}
 						}
 						$pages = serialize($npages);
-						$product[$key] = "'".$pages."'";
+						$nproduct[$key] = "'".$pages."'";
 					} else if($key == 'lsShopProductAttributesValues') {
 						$av = unserialize($value);
 						$nav = array();
@@ -130,18 +137,18 @@
 							}
 						}
 						$nav = serialize($nav);
-						$product[$key] = "'".$nav."'";
+						$nproduct[$key] = "'".$nav."'";
 					} else if($key == 'lsShopProductSteuersatz') {
 						$id = $conn->prepare("SELECT id FROM tl_ls_shop_steuersaetze WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
 						if(isset($id)) {
-							$product[$key] = $id;
+							$nproduct[$key] = $id;
 						} else {
 							array_push($import_errors, 'Couldn\'t find tax rate with alias: '.$value);
 						}
 					} else if($key == 'lsShopProductDeliveryInfoSet') {
 						$id = $conn->prepare("SELECT id FROM tl_ls_shop_delivery_info WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
 						if(isset($id)) {
-							$product[$key] = $id;
+							$nproduct[$key] = $id;
 						} else {
 							array_push($import_errors, 'Couldn\'t find shop delivery info with alias: '.$value);
 						}
@@ -164,9 +171,9 @@
 								}
 							}
 							$prds = serialize($nprds);
-							$product[$key] = $prds;
+							$nproduct[$key] = "'".$prds."'";
 						} else {
-							$product[$key] = '';
+							$nproduct[$key] = "''";
 						}
 					} else {
 						$nproduct[$key] = "'".$value."'";
@@ -175,13 +182,95 @@
 				array_push($nproducts, $nproduct);
 			}
 
+
+			$nvariants = array();
+			foreach($variantarr as $variant) {
+				$nvariant = array();
+				foreach($variant as $key => $value) {
+					if($key == 'lsShopProductVariantMainImage') {
+						$nvariant[$key] = $value;
+					} else if($key == 'configurator') {
+						if(isset($value)) {
+							$id = $conn->prepare("SELECT id FROM tl_ls_shop_configurator WHERE alias='$value'")->execute()->fetchAllAssoc()[0]['id'];
+							if(isset($id)) {
+								$nvariant[$key] = $id;
+							} else {
+								array_push($import_errors, 'Couldn\'t find configurator with alias: '.$value);
+							}
+						}
+					} else if($key == 'lsShopProductVariantAttributesValues') {
+						$av = unserialize($value);
+						$nav = array();
+						foreach($av as $avi) {
+							$attr = $avi[0];
+							$val = $avi[1];
+							$id_a = $conn->prepare("SELECT id FROM tl_ls_shop_attributes WHERE alias='".$attr."'")->execute()->fetchAllAssoc()[0]['id'];
+							$id_v = $conn->prepare("SELECT id FROM tl_ls_shop_attribute_values WHERE alias='".$val."'")->execute()->fetchAllAssoc()[0]['id'];
+							if(!isset($id_a)) {
+								array_push($import_errors, 'Couldn\'t find attribute with alias: '.$attr);
+							}
+							if(!isset($id_v)) {
+								array_push($import_errors, 'Couldn\'t find attribute value with alias: '.$val);
+							}
+							if(isset($id_a) && isset($id_v)) {
+								array_push($nav, array($id_a, $id_v));
+							}
+						}
+						$nav = serialize($nav);
+						$nvariant[$key] = "'".$nav."'";
+					} else if($key == 'lsShopVariantDeliveryInfoSet') {
+						$id = $conn->prepare("SELECT id FROM tl_ls_shop_delivery_info WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
+						if(isset($id)) {
+							$nvariant[$key] = $id;
+						} else {
+							array_push($import_errors, 'Couldn\'t find shop delivery info with alias: '.$value);
+						}
+					} else if($key == 'pid') {
+						$id = $conn->prepare("SELECT id FROM tl_ls_shop_product WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
+						if(isset($id)) {
+							$nvariant[$key] = $id;
+						} else {
+							if(isset($future_ids[$value])) {
+								$nvariant[$key] = $future_ids[$value];
+							} else {
+								array_push($import_errors, 'Couldn\'t find product with alias: '.$value);
+							}
+						}
+					}else {
+						$nvariant[$key] = "'".$value."'";
+					}
+				}
+				array_push($nvariants, $nvariant);
+			}
+
 			$this->importArray('tl_ls_shop_product', $nproducts);
+			$this->importArray('tl_ls_shop_variant', $nvariants);
 
 			return array_unique($import_errors);
 		}
 		
 		public function importArray($table, $array) {
-			//$columns = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();$columns[0]['Field'];
+			$columns = \Database::getInstance()->prepare("SHOW COLUMNS FROM $table;")->execute()->fetchAllAssoc();
+			$fields = array();
+			foreach($columns as $column) {
+				array_push($fields, $column['Field']);
+			}
+
+			//INSERT INTO tl_ls_shop_product (col1, col2, col3, col4, col5) VALUES ('val1', 'val2', 'val3', 'val4', 'val5');
+
+			$cols = implode(', ', $fields);
+			foreach($array as $entry) {
+				$sql = "INSERT INTO $table ($cols) VALUES (";
+				foreach($fields as $field) {
+					$val = $entry[$field];
+					$sql .= $val.', ';
+				}
+				$sql = substr($sql, 0, -2);
+
+				$sql.=');';
+				echo $sql.'<br><br><br>';
+			}
+
 		}
 
 	}
