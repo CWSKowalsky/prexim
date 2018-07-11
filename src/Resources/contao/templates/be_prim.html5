@@ -15,10 +15,11 @@
             <font face="Arial" color="green"><?= $this->scc; ?></font>
             <font face="Arial" color="red"><?= $this->err; ?></font>
 
-            <?php if($this->imp == true) { ?>
+            <?php if($this->shimpbtn == true) { ?>
                 <form action="" method="post" enctype="multipart/form-data" class="uploadform">
                     <input type="hidden" name="REQUEST_TOKEN" value="<?= REQUEST_TOKEN ?>">
-                    <input type="submit" value="Importieren" name="submit">
+                    <input type="hidden" name="ifile" value="<?= $this->ifile; ?>">
+                    <input type="submit" value="Importieren" name="isubmit">
                 </form>
             <?php } ?>
         </div>
