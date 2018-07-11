@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>Produkt-Import</h1>
+        <?= $this->sts; ?>
+
+        <form action="" method="post" enctype="multipart/form-data">
+            Bitte w&auml;hlen Sie eine Datei zum Hochladen aus.
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Hochladen" name="submit">
+        </form>
+
+        <font face="Arial" color="green"><?= $this->scc; ?></font>
+        <font face="Arial" color="red"><?= $this->err; ?></font>
+
+    </body>
+</html>
+
+<?php
+    
+
+?>
