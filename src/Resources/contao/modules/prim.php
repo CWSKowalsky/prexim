@@ -76,18 +76,15 @@
 			$conn = \Database::getInstance();
 			$import_errors = array();
 
-			var_dump($cautoincr = $conn->prepare("SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc());
-			die();
-
 			$future_ids = array();
-			$cautoincr = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
+			$cautoincr = $conn->prepare("SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
 			for($i = 0; $i < sizeof($productarr); $i++) {
 				$productarr[$i]['id'] = $cautoincr;
 				$future_ids[$productarr[$i]['alias']] = $cautoincr;
 				$cautoincr++;
 			}
 
-			$cautoincrv = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_variant';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
+			$cautoincrv = $conn->prepare("SELECT AUTO_INCREMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_variant';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
 			for($i = 0; $i < sizeof($variantarr); $i++) {
 				$variantarr[$i]['id'] = $cautoincrv;
 				$cautoincrv++;
