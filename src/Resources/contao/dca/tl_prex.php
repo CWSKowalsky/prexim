@@ -203,7 +203,7 @@ function exportAllProducts($conn) {
 		foreach($p as $key => $value) {
 			
 			if($key == 'lsShopProductMainImage') {
-				$product[$key] = "X'".strtoupper(bin2hex($value))."'";
+				$product[$key] = "UNHEX('".strtoupper(bin2hex($value))."')";
 			} else if($key == 'configurator') {
 				$alias = execute($conn, "SELECT alias FROM tl_ls_shop_configurator WHERE id='".$value."'")[0]['alias'];
 				$product[$key] = $alias;
@@ -267,7 +267,7 @@ function exportAllVariants($conn) {
 		foreach($v as $key => $value) {
 			
 			if($key == 'lsShopProductVariantMainImage') {
-				$variant[$key] = "X'".strtoupper(bin2hex($value))."'";
+				$variant[$key] = "UNHEX('".strtoupper(bin2hex($value))."')";
 			} else if($key == 'configurator') {
 				$alias = execute($conn, "SELECT alias FROM tl_ls_shop_configurator WHERE id='".$value."'")[0]['alias'];
 				$variant[$key] = $alias;
