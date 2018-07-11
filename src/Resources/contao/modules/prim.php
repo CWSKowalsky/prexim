@@ -44,7 +44,7 @@
 		public function checkImport() {
 			if(isset($_POST['isubmit'])) {
 				if(isset($_POST['ifile']) && file_exists($_POST['ifile'])) {
-					$import = file_get_contents($target_file);
+					$import = file_get_contents($_POST['ifile']);
 					if(isset($import) && $import != '') {
 						$importarr = unserialize($import);
 						if(sizeof($importarr) > 0) {
@@ -54,11 +54,11 @@
 								$this->import($importarr);
 								$this->Template->sts = 'Status: Import abgeschlossen';
 								$this->Template->scc = "Import erfolgreich (Produkte: $pram, Varianten: $vaam)";
+								return;
 							}
 						}
 					}
 				}
-			} else {
 				$this->Template->err = "Fehler beim importieren.";
 			}
 		}
