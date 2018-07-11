@@ -168,7 +168,6 @@ if($_GET['act'] == "exc" && $_GET['do'] == "prex") {
 		$variants = exportAllVariants($conn);
 		$export = array('products' => $products, 'variants' => $variants);
 		$export_ser = serialize($export);
-		$export_ser = utf8_encode($export_ser);
 		$file = getFile();
 		file_put_contents($file, $export_ser, FILE_APPEND | LOCK_EX);
 		header("Location: ".parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH).'?do=prex');
@@ -248,6 +247,8 @@ function exportAllProducts($conn) {
 				} else {
 					$product[$key] = '';
 				}
+			} else if(strpos(strtolower($key), 'description') !== false) {
+				$product[$key] = utf8_encode($value);
 			} else {
 				$product[$key] = $value;
 			}
