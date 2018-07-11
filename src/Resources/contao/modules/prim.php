@@ -33,7 +33,6 @@
 						$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen (Produkte: $pram, Varianten: $vaam)";
 						$this->Template->shimpbtn = true;
 						$this->Template->ifile = $target_file;
-						$this->Template->mss = $this->compareKeys($importarr);
 					} else {
 						$this->Template->sts = 'Status: Datei hochgeladen (fehlerhaft)';
 						$this->Template->err = "Es wurden keine Produkte/Varianten in der Datei gefunden.";
@@ -42,29 +41,6 @@
 					$this->Template->err = "Die Datei konnte nicht hochgeladen werden.";
 				}
 			}
-		}
-
-		public function compareKeys($importarr) {
-			$keysp = array_keys($importarr['products']['0']);
-			$keysv = array_keys($importarr['variants']['0']);
-			$resultarrp = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
-			$resultarrv = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
-
-			$missingp = array();
-			foreach($resultarrp as $column) {
-				if(!in_array($column['Field'], $keysp)) {
-					array_push($missingp, $column['Field']);
-				}
-			}
-
-			$missingv = array();
-			foreach($resultarrv as $column) {
-				if(!in_array($column['Field'], $keysv)) {
-					array_push($missingv, $column['Field']);
-				}
-			}
-
-			return "Folgende Felder fehlen in der importierten Datei:<br>Produkte: ".implode(', ', $missingp)."<br>Varianten: ".implode(', ', $missingv);
 		}
 
 		public function checkImport() {
@@ -90,7 +66,105 @@
 		}
 
 		public function import($importarr) {
+			$error_array = $this->importProducts($importarr['products']);
+			print_r($error_array);
+		}
+
+		public function importProducts($productarr) {
+			$conn = \Database::getInstance();
+			$import_errors = array();
 			
+			$nproducts = array();
+			foreach($productarr as $product) {
+				$nproduct = array();
+				foreach($product as $key => $value) {
+					if($key == 'lsShopProductMainImage') {
+						$nproduct[$key] = $value;
+					} else if($key == 'configurator') {
+						$id = $conn->prepare("SELECT id FROM tl_ls_shop_configurator WHERE alias='$value'")->execute()->fetchAllAssoc()[0]['id'];
+						if(isset($id)) {
+							$nproduct[$key] = $id;
+						} else {
+							array_push($import_errors, 'Couldn\'t find configurator with alias: '.$value);
+						}
+					} else if($key == 'pages') {
+						$pages = unserialize($value);
+						$npages = array();
+						foreach($pages as $page) {
+							$id = $conn->prepare("SELECT id FROM tl_page WHERE alias='".$page."'")->execute()->fetchAllAssoc()[0]['id'];
+							if(isset($id)) {
+								array_push($npages, $id);
+							} else {
+								array_push($import_errors, 'Couldn\'t find page with alias: '.$page);
+							}
+						}
+						$pages = serialize($npages);
+						$product[$key] = "'".$pages."'";
+					} else if($key == 'lsShopProductAttributesValues') {
+						$av = unserialize($value);
+						$nav = array();
+						foreach($av as $avi) {
+							$attr = $avi[0];
+							$val = $avi[1];
+							$id_a = $conn->prepare("SELECT id FROM tl_ls_shop_attributes WHERE alias='".$attr."'")->execute()->fetchAllAssoc()[0]['id'];
+							$id_v = $conn->prepare("SELECT id FROM tl_ls_shop_attribute_values WHERE alias='".$val."'")->execute()->fetchAllAssoc()[0]['id'];
+							if(!isset($id_a)) {
+								array_push($import_errors, 'Couldn\'t find attribute with alias: '.$attr);
+							}
+							if(!isset($id_v)) {
+								array_push($import_errors, 'Couldn\'t find attribute value with alias: '.$val);
+							}
+							if(isset($id_a) && isset($id_v)) {
+								array_push($nav, array($id_a, $id_v));
+							}
+						}
+						$nav = serialize($nav);
+						$product[$key] = "'".$nav."'";
+					} else if($key == 'lsShopProductSteuersatz') {
+						$id = $conn->prepare("SELECT id FROM tl_ls_shop_steuersaetze WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
+						if(isset($id)) {
+							$product[$key] = $id;
+						} else {
+							array_push($import_errors, 'Couldn\'t find tax rate with alias: '.$value);
+						}
+					} else if($key == 'lsShopProductDeliveryInfoSet') {
+						$id = $conn->prepare("SELECT id FROM tl_ls_shop_delivery_info WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];
+						if(isset($id)) {
+							$product[$key] = $id;
+						} else {
+							array_push($import_errors, 'Couldn\'t find shop delivery info with alias: '.$value);
+						}
+					} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts'){
+						$prds = unserialize($value);
+						if(sizeof($prds) > 0) {
+							$nprds = array();
+							foreach($prds as $prd) {
+								$id = $conn->prepare("SELECT id FROM tl_ls_shop_product WHERE alias='".$prd."'")->execute()->fetchAllAssoc()[0]['id'];
+								if(isset($id)) {
+									array_push($nprds, $id);
+								} else {
+									array_push($import_errors, 'Couldn\'t find '.$key.' with alias: '.$value);
+								}
+							}
+							$prds = serialize($nprds);
+							$product[$key] = $prds;
+						} else {
+							$product[$key] = '';
+						}
+					} else {
+						$nproduct[$key] = "'".$value."'";
+					}
+				}
+				array_push($nproducts, $nproduct);
+			}
+
+			$this->importArray('tl_ls_shop_product', $nproducts);
+
+			return array_unique($import_errors);
+		}
+		
+		public function importArray($table, $array) {
+			//$columns = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();$columns[0]['Field'];
 		}
 
 	}
