@@ -25,6 +25,7 @@
 				}
 				if($uploadOk == 1 && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
 					$import = file_get_contents($target_file);
+					$import = mb_convert_encoding($import, 'HTML-ENTITIES', "UTF-8");
 					$importarr = unserialize($import);
 					$pram = sizeof($importarr['products']);
 					$vaam = sizeof($importarr['variants']);
@@ -47,6 +48,7 @@
 			if(isset($_POST['isubmit'])) {
 				if(isset($_POST['ifile']) && file_exists($_POST['ifile'])) {
 					$import = file_get_contents($_POST['ifile']);
+					$import = mb_convert_encoding($import, 'HTML-ENTITIES', "UTF-8");
 					if(isset($import) && $import != '') {
 						$importarr = unserialize($import);
 						if(sizeof($importarr) > 0) {
