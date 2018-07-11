@@ -6,7 +6,7 @@
 		
 		protected function compile() 
 		{
-			$this->import("Database");
+			//$this->import("Database");
 
 			$this->Template->sts = 'Status: Warten auf Upload';
 			$this->checkUpload();
@@ -53,7 +53,7 @@
 							if(isset($importarr['products']) && isset($importarr['variants'])) {
 								$pram = sizeof($importarr['products']);
 								$vaam = sizeof($importarr['variants']);
-								$this->import($importarr);
+								$this->runimport($importarr);
 								$this->Template->sts = 'Status: Import abgeschlossen';
 								$this->Template->scc = "Import erfolgreich (Produkte: $pram, Varianten: $vaam)";
 								return;
@@ -65,7 +65,7 @@
 			}
 		}
 
-		public function import($importarr) {
+		public function runimport($importarr) {
 			$error_array = $this->importProducts($importarr['products']);
 			echo '->';
 			print_r($error_array);
