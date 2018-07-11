@@ -25,7 +25,7 @@
 				}
 				if($uploadOk == 1 && move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
 					$import = file_get_contents($target_file);
-					$import = mb_convert_encoding($import, 'HTML-ENTITIES', "UTF-8");
+					$import = utf8_decode($import);
 					$importarr = unserialize($import);
 					$pram = sizeof($importarr['products']);
 					$vaam = sizeof($importarr['variants']);
