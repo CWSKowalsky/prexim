@@ -53,14 +53,14 @@
 			$missingp = array();
 			foreach($resultarrp as $column) {
 				if(!in_array($column['Field'], $keysp)) {
-					push_array($missingp, $column['Field']);
+					array_push($missingp, $column['Field']);
 				}
 			}
 
 			$missingv = array();
 			foreach($resultarrv as $column) {
 				if(!in_array($column['Field'], $keysv)) {
-					push_array($missingv, $column['Field']);
+					array_push($missingv, $column['Field']);
 				}
 			}
 
