@@ -6,6 +6,8 @@
 		
 		protected function compile() 
 		{
+			$this->import("Database");
+
 			$this->Template->sts = 'Status: Warten auf Upload';
 			$this->checkUpload();
 			$this->checkImport();
@@ -27,6 +29,7 @@
 					$pram = sizeof($importarr['products']);
 					$vaam = sizeof($importarr['variants']);
 					if($pram > 0 || $vaam > 0) {
+						$this->compareKeys($importarr);
 						$this->Template->sts = 'Status: Datei hochgeladen';
 						$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen (Produkte: $pram, Varianten: $vaam)";
 						$this->Template->shimpbtn = true;
@@ -39,6 +42,17 @@
 					$this->Template->err = "Die Datei konnte nicht hochgeladen werden.";
 				}
 			}
+		}
+
+		public function compareKeys($importarr) {
+			$keysp = array_keys($importarr['products']['0']);
+			$keysv = array_keys($importarr['variants']['0']);
+			$resultarrp = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
+			$resultarrv = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
+			print_r($keysp);echo '--kp--<br><br>';
+			print_r($keysv);echo '--kv--<br><br>';
+			print_r($resultarrp);echo '--dp--<br><br>';
+			print_r($resultarrv);echo '--dv--<br><br>';
 		}
 
 		public function checkImport() {
@@ -64,7 +78,7 @@
 		}
 
 		public function import($importarr) {
-			//TODO
+			
 		}
 
 	}
