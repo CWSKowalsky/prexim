@@ -241,6 +241,8 @@
 					}
 				}
 				array_push($nvariants, $nvariant);
+
+
 			}
 
 			$this->importArray('tl_ls_shop_product', $nproducts);
@@ -250,7 +252,10 @@
 		}
 		
 		public function importArray($table, $array) {
-			$columns = \Database::getInstance()->prepare("SHOW COLUMNS FROM $table;")->execute()->fetchAllAssoc();
+
+			$conn = \Database::getInstance();
+
+			$columns = $conn->prepare("SHOW COLUMNS FROM $table;")->execute()->fetchAllAssoc();
 			$fields = array();
 			foreach($columns as $column) {
 				array_push($fields, $column['Field']);
@@ -272,7 +277,8 @@
 				$sql = substr($sql, 0, -2);
 
 				$sql.=');';
-				echo $sql.'<br><br><br>';
+				//echo $sql.'<br><br><br>';
+				$conn->prepare($sql)->execute();
 			}
 
 		}
