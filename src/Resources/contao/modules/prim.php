@@ -29,11 +29,11 @@
 					$pram = sizeof($importarr['products']);
 					$vaam = sizeof($importarr['variants']);
 					if($pram > 0 || $vaam > 0) {
-						$this->compareKeys($importarr);
 						$this->Template->sts = 'Status: Datei hochgeladen';
 						$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen (Produkte: $pram, Varianten: $vaam)";
 						$this->Template->shimpbtn = true;
 						$this->Template->ifile = $target_file;
+						$this->Template->mss = $this->compareKeys($importarr);
 					} else {
 						$this->Template->sts = 'Status: Datei hochgeladen (fehlerhaft)';
 						$this->Template->err = "Es wurden keine Produkte/Varianten in der Datei gefunden.";
@@ -49,10 +49,22 @@
 			$keysv = array_keys($importarr['variants']['0']);
 			$resultarrp = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
 			$resultarrv = \Database::getInstance()->prepare("SHOW COLUMNS FROM tl_ls_shop_product;")->execute()->fetchAllAssoc();
-			print_r($keysp);echo '--kp--<br><br>';
-			print_r($keysv);echo '--kv--<br><br>';
-			print_r($resultarrp);echo '--dp--<br><br>';
-			print_r($resultarrv);echo '--dv--<br><br>';
+
+			$missingp = array();
+			foreach($resultarrp as $column) {
+				if(!in_array($column['Field'], $keysp)) {
+					push_array($missingp, $column['Field']);
+				}
+			}
+
+			$missingv = array();
+			foreach($resultarrv as $column) {
+				if(!in_array($column['Field'], $keysv)) {
+					push_array($missingv, $column['Field']);
+				}
+			}
+
+			return "Folgende Felder fehlen in der importierten Datei:<br>Produkte: ".implode(', ', $missingp)."<br>Varianten: ".implode(', ', $missingv);
 		}
 
 		public function checkImport() {
