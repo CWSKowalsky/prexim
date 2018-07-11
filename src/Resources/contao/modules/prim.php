@@ -29,8 +29,8 @@
 					if($pram > 0 || $vaam > 0) {
 						$this->Template->sts = 'Status: Datei hochgeladen';
 						$this->Template->scc = "Die Datei wurde erfolgreich hochgeladen (Produkte: $pram, Varianten: $vaam)";
-						$this->Temyplate->shimpbtn = true;
-						$this->Temyplate->ifile = $target_file;
+						$this->Template->shimpbtn = true;
+						$this->Template->ifile = $target_file;
 					} else {
 						$this->Template->sts = 'Status: Datei hochgeladen (fehlerhaft)';
 						$this->Template->err = "Es wurden keine Produkte/Varianten in der Datei gefunden.";
