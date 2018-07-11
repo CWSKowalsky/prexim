@@ -66,8 +66,8 @@
 		}
 
 		public function import($importarr) {
-			$error_array = $this->importProducts($importarr['pr
-			oducts']);
+			$error_array = $this->importProducts($importarr['products']);
+			echo '->';
 			print_r($error_array);
 		}
 
