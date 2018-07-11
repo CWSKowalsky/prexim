@@ -76,6 +76,9 @@
 			$conn = \Database::getInstance();
 			$import_errors = array();
 
+			var_dump($cautoincr = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc());
+			die();
+
 			$future_ids = array();
 			$cautoincr = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
 			for($i = 0; $i < sizeof($productarr); $i++) {
@@ -263,7 +266,11 @@
 				$sql = "INSERT INTO $table ($cols) VALUES (";
 				foreach($fields as $field) {
 					$val = $entry[$field];
-					$sql .= $val.', ';
+					if(isset($val)) {
+						$sql .= $val.', ';
+					} else {
+						$sql .= "'', ";
+					}
 				}
 				$sql = substr($sql, 0, -2);
 
