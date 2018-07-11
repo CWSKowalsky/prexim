@@ -66,13 +66,22 @@
 		}
 
 		public function import($importarr) {
-			$error_array = $this->importProducts($importarr['products']);
+			$error_array = $this->importProducts($importarr['pr
+			oducts']);
 			print_r($error_array);
 		}
 
 		public function importProducts($productarr) {
 			$conn = \Database::getInstance();
 			$import_errors = array();
+
+			$future_ids = array();
+			$cautoincr = $conn->query("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
+			foreach($productarr as $product) {
+				$product['id'] = $cautoincr;
+				$future_ids[$product['alias']] = $cautoincr;
+				$cautoincr++;
+			}
 			
 			$nproducts = array();
 			foreach($productarr as $product) {
@@ -136,7 +145,7 @@
 						} else {
 							array_push($import_errors, 'Couldn\'t find shop delivery info with alias: '.$value);
 						}
-					} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts') {	//TODO handle alias of products that dont exist in the db
+					} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts') {
 						$prds = unserialize($value);
 						if(sizeof($prds) > 0) {
 							$nprds = array();
@@ -146,7 +155,11 @@
 									if(isset($id)) {
 										array_push($nprds, $id);
 									} else {
-										array_push($import_errors, 'Couldn\'t find '.$key.' with alias: '.$prd);
+										if(isset($future_ids[$prd])) {
+											array_push($nprds, $future_ids[$prd]);
+										} else {
+											array_push($import_errors, 'Couldn\'t find product with alias: '.$prd);
+										}
 									}
 								}
 							}
