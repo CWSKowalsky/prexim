@@ -48,7 +48,7 @@
 			if(isset($_POST['isubmit'])) {
 				if(isset($_POST['ifile']) && file_exists($_POST['ifile'])) {
 					$import = file_get_contents($_POST['ifile']);
-					$import = mb_convert_encoding($import, 'HTML-ENTITIES', "UTF-8");
+					$import = utf8_decode($import);
 					if(isset($import) && $import != '') {
 						$importarr = unserialize($import);
 						if(sizeof($importarr) > 0) {
