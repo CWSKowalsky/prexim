@@ -76,7 +76,7 @@
 			$import_errors = array();
 
 			$future_ids = array();
-			$cautoincr = $conn->query("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
+			$cautoincr = $conn->prepare("SELECT 'AUTO_INCREMENT' FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA='".$GLOBALS['TL_CONFIG']['dbDatabase']."' AND TABLE_NAME='tl_ls_shop_product';")->execute()->fetchAllAssoc()[0]['AUTO_INCREMENT'];
 			foreach($productarr as $product) {
 				$product['id'] = $cautoincr;
 				$future_ids[$product['alias']] = $cautoincr;
