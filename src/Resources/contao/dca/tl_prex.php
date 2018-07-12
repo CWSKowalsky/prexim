@@ -247,7 +247,7 @@ function exportAllProducts($conn) {
 				} else {
 					$product[$key] = '';
 				}
-			} else if(strpos(strtolower($key), 'description') !== false || strpos(strtolower($key), 'title') !== false || strpos(strtolower($key), 'keyword') !== false) {
+			} else if(includes($key, 'description') || includes($key, 'title') || includes($key, 'keywords')) {
 				$product[$key] = utf8_encode($value);
 			} else {
 				$product[$key] = $value;
@@ -257,6 +257,11 @@ function exportAllProducts($conn) {
 		array_push($products, $product);
 	}
 	return $products;
+}
+
+function includes($haystack, $needle) {
+	$includes = strpos(strtolower($haystack), $needle) !== false;;
+	return $includes;
 }
 
 function exportAllVariants($conn) {
@@ -291,7 +296,7 @@ function exportAllVariants($conn) {
 			} else if($key == 'pid') {
 				$alias = execute($conn, "SELECT alias FROM tl_ls_shop_product WHERE id='".$value."'")[0]['alias'];
 				$variant[$key] = $alias;
-			} else if(strpos(strtolower($key), 'description') !== false || strpos(strtolower($key), 'title') !== false || strpos(strtolower($key), 'keyword') !== false) {
+			} else if(includes($key, 'description') || includes($key, 'title') || includes($key, 'keywords')) {
 				$variant[$key] = utf8_encode($value);
 			} else {
 				$variant[$key] = $value;
