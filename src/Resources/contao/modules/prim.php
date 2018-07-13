@@ -11,6 +11,18 @@
 			$this->Template->sts = 'Status: Warten auf Upload';
 			$this->checkUpload();
 			$this->checkImport();
+
+			if($_GET['fixattr'] == 'true') {
+				$str = 'a:1:{i:0;a:2:{i:0;s:1:"6";i:1;s:2:"36";}}';
+				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductAttributesValues FROM tl_ls_shop_product")->execute();
+				$result = $result->fetchAllAssoc();
+				foreach($result as $row) {
+					$attr = unserialize($row['lsShopProductAttributesValues']);
+					$attr_str = json_encode($attr);
+					\Database::getInstance()->prepare("UPDATE tl_ls_shop_product SET lsShopProductAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+				}
+			}
+
 		}
 
 		public function checkUpload() {
@@ -136,7 +148,7 @@
 								array_push($nav, array($id_a, $id_v));
 							}
 						}
-						$nav = serialize($nav);
+						$nav = json_encode($nav);
 						$nproduct[$key] = "'".$nav."'";
 					} else if($key == 'lsShopProductSteuersatz') {
 						$id = $conn->prepare("SELECT id FROM tl_ls_shop_steuersaetze WHERE alias='".$value."'")->execute()->fetchAllAssoc()[0]['id'];

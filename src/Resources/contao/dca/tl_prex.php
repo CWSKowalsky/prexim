@@ -84,7 +84,7 @@ $GLOBALS['TL_DCA']['tl_prex'] = array
 			'exc' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_prex']['exc'],
-				'icon'                => 'system/modules/cron_info/assets/cron_info_start_icon.png',
+				'icon'                => 'vendor/skowalsky/src/Resources/public/start_now.png',
 				'attributes'          => 'onclick="Backend.getScrollOffset();"',
 				'href'                => 'act=exc'
 			),
