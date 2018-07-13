@@ -12,14 +12,21 @@
 			$this->checkUpload();
 			$this->checkImport();
 
-			if($_GET['fixattr'] == 'true') {
-				$str = 'a:1:{i:0;a:2:{i:0;s:1:"6";i:1;s:2:"36";}}';
+			if($_GET['fixattr'] == 'prd') {
 				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductAttributesValues FROM tl_ls_shop_product")->execute();
 				$result = $result->fetchAllAssoc();
 				foreach($result as $row) {
 					$attr = unserialize($row['lsShopProductAttributesValues']);
 					$attr_str = json_encode($attr);
 					\Database::getInstance()->prepare("UPDATE tl_ls_shop_product SET lsShopProductAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+				}
+			} else if($_GET['fixattr'] == 'vrt') {
+				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductVariantAttributesValues FROM tl_ls_shop_variant")->execute();
+				$result = $result->fetchAllAssoc();
+				foreach($result as $row) {
+					$attr = unserialize($row['lsShopProductVariantAttributesValues']);
+					$attr_str = json_encode($attr);
+					\Database::getInstance()->prepare("UPDATE tl_ls_shop_variant SET lsShopProductVariantAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
 				}
 			}
 
