@@ -163,17 +163,20 @@ if($_GET['act'] == "exc" && $_GET['do'] == "prex") {
 	$conn = getConnection();
 	$data = execute($conn, "SELECT * FROM tl_prex WHERE id=$id")[0];
 
+	$sfile = '';
+
 	if($data['allp'] == 1) {
 		$products = exportAllProducts($conn);
 		$variants = exportAllVariants($conn);
 		$export = array('products' => $products, 'variants' => $variants);
 		$export_ser = serialize($export);
 		$file = getFile();
+		$sfile = $file;
 		file_put_contents($file, $export_ser, FILE_APPEND | LOCK_EX);
 	}
 	
 	$conn->close();
-	echo 'Done';
+	echo 'Done.<br>Export data saved at: "'.$sfile.'"';
 	die();
 }
 
