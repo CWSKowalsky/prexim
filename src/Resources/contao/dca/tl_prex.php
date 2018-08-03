@@ -171,8 +171,10 @@ if($_GET['act'] == "exc" && $_GET['do'] == "prex") {
 		$file = getFile();
 		file_put_contents($file, $export_ser, FILE_APPEND | LOCK_EX);
 	}
-
+	
 	$conn->close();
+	echo 'Done';
+	die();
 }
 
 function getFile() {
