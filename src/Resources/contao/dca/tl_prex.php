@@ -164,12 +164,8 @@ if($_GET['act'] == "exc" && $_GET['do'] == "prex") {
 	$data = execute($conn, "SELECT * FROM tl_prex WHERE id=$id")[0];
 
 	if($data['allp'] == 1) {
-		$products = exportAllProducts($conn);
-		$variants = exportAllVariants($conn);
-		$export = array('products' => $products, 'variants' => $variants);
-		$export_ser = serialize($export);
-		$file = getFile();
-		file_put_contents($file, $export_ser, FILE_APPEND | LOCK_EX);
+		echo 'Test';
+		die();
 		header("Location: ".parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH).'?do=prex');
 	}
 
