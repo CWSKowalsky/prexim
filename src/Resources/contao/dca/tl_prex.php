@@ -84,7 +84,7 @@ $GLOBALS['TL_DCA']['tl_prex'] = array
 			'exc' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_prex']['exc'],
-				'icon'                => 'start_now.png',
+				'icon'                => 'move.gif',
 				'attributes'          => 'onclick="Backend.getScrollOffset();"',
 				'href'                => 'act=exc'
 			),
