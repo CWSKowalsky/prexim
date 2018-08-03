@@ -17,16 +17,20 @@
 				$result = $result->fetchAllAssoc();
 				foreach($result as $row) {
 					$attr = unserialize($row['lsShopProductAttributesValues']);
-					$attr_str = json_encode($attr);
-					\Database::getInstance()->prepare("UPDATE tl_ls_shop_product SET lsShopProductAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+					if(sizeof($attr) > 0) {
+						$attr_str = json_encode($attr);
+						\Database::getInstance()->prepare("UPDATE tl_ls_shop_product SET lsShopProductAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+					}
 				}
 			} else if($_GET['fixattr'] == 'vrt') {
 				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductVariantAttributesValues FROM tl_ls_shop_variant")->execute();
 				$result = $result->fetchAllAssoc();
 				foreach($result as $row) {
 					$attr = unserialize($row['lsShopProductVariantAttributesValues']);
-					$attr_str = json_encode($attr);
-					\Database::getInstance()->prepare("UPDATE tl_ls_shop_variant SET lsShopProductVariantAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+					if(sizeof($attr) > 0) {
+						$attr_str = json_encode($attr);
+						\Database::getInstance()->prepare("UPDATE tl_ls_shop_variant SET lsShopProductVariantAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
+					}
 				}
 			}
 
