@@ -87,7 +87,7 @@ $GLOBALS['TL_DCA']['tl_prex'] = array
 				'icon'                => 'cut.svg',
 				'attributes'          => 'onclick="Backend.getScrollOffset();"',
 				'href'                => 'act=exc'
-			),
+			)
 		)
 	),
 
@@ -174,6 +174,7 @@ if($_GET['act'] == "exc" && $_GET['do'] == "prex") {
 	}
 
 	$conn->close();
+	header("Location: ".parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH).'?do=prex');
 }
 
 function getFile() {
