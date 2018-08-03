@@ -12,28 +12,6 @@
 			$this->checkUpload();
 			$this->checkImport();
 
-			if($_GET['fixattr'] == 'prd') {
-				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductAttributesValues FROM tl_ls_shop_product")->execute();
-				$result = $result->fetchAllAssoc();
-				foreach($result as $row) {
-					$attr = unserialize($row['lsShopProductAttributesValues']);
-					if(sizeof($attr) > 0) {
-						$attr_str = json_encode($attr);
-						\Database::getInstance()->prepare("UPDATE tl_ls_shop_product SET lsShopProductAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
-					}
-				}
-			} else if($_GET['fixattr'] == 'vrt') {
-				$result = \Database::getInstance()->prepare("SELECT id, lsShopProductVariantAttributesValues FROM tl_ls_shop_variant")->execute();
-				$result = $result->fetchAllAssoc();
-				foreach($result as $row) {
-					$attr = unserialize($row['lsShopProductVariantAttributesValues']);
-					if(sizeof($attr) > 0) {
-						$attr_str = json_encode($attr);
-						\Database::getInstance()->prepare("UPDATE tl_ls_shop_variant SET lsShopProductVariantAttributesValues='$attr_str' WHERE id=".$row['id'])->execute();
-					}
-				}
-			}
-
 		}
 
 		public function checkUpload() {
@@ -142,7 +120,7 @@
 						$pages = serialize($npages);
 						$nproduct[$key] = "'".$pages."'";
 					} else if($key == 'lsShopProductAttributesValues') {
-						$av = unserialize($value);
+						$av = json_encode($value);
 						$nav = array();
 						foreach($av as $avi) {
 							$attr = $avi[0];
@@ -222,7 +200,7 @@
 							}
 						}
 					} else if($key == 'lsShopProductVariantAttributesValues') {
-						$av = unserialize($value);
+						$av = json_encode($value);
 						$nav = array();
 						foreach($av as $avi) {
 							$attr = $avi[0];

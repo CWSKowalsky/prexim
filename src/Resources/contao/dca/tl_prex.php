@@ -84,7 +84,7 @@ $GLOBALS['TL_DCA']['tl_prex'] = array
 			'exc' => array
 			(
 				'label'               => &$GLOBALS['TL_LANG']['tl_prex']['exc'],
-				'icon'                => 'vendor/skowalsky/src/Resources/public/start_now.png',
+				'icon'                => 'start_now.png',
 				'attributes'          => 'onclick="Backend.getScrollOffset();"',
 				'href'                => 'act=exc'
 			),
@@ -217,7 +217,7 @@ function exportAllProducts($conn) {
 				$pages = serialize($npages);
 				$product[$key] = $pages;
 			} else if($key == 'lsShopProductAttributesValues') {
-				$av = unserialize($value);
+				$av = json_decode($value);
 				$nav = array();
 				foreach($av as $avi) {
 					$attr = $avi[0];
@@ -279,7 +279,7 @@ function exportAllVariants($conn) {
 				$alias = execute($conn, "SELECT alias FROM tl_ls_shop_configurator WHERE id='".$value."'")[0]['alias'];
 				$variant[$key] = $alias;
 			} else if($key == 'lsShopProductVariantAttributesValues') {
-				$av = unserialize($value);
+				$av = json_decode($value);
 				$nav = array();
 				foreach($av as $avi) {
 					$attr = $avi[0];
