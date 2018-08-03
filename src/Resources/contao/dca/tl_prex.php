@@ -219,12 +219,14 @@ function exportAllProducts($conn) {
 			} else if($key == 'lsShopProductAttributesValues') {
 				$av = json_decode($value);
 				$nav = array();
-				foreach($av as $avi) {
-					$attr = $avi[0];
-					$val = $avi[1];
-					$alias_a = execute($conn, "SELECT alias FROM tl_ls_shop_attributes WHERE id='".$attr."'")[0]['alias'];
-					$alias_v = execute($conn, "SELECT alias FROM tl_ls_shop_attribute_values WHERE id='".$val."'")[0]['alias'];
-					array_push($nav, array($alias_a, $alias_v));
+				if(is_array($av) && sizeof($av) > 0) {
+					foreach($av as $avi) {
+						$attr = $avi[0];
+						$val = $avi[1];
+						$alias_a = execute($conn, "SELECT alias FROM tl_ls_shop_attributes WHERE id='".$attr."'")[0]['alias'];
+						$alias_v = execute($conn, "SELECT alias FROM tl_ls_shop_attribute_values WHERE id='".$val."'")[0]['alias'];
+						array_push($nav, array($alias_a, $alias_v));
+					}
 				}
 				$nav = serialize($nav);
 				$product[$key] = $nav;
@@ -236,10 +238,10 @@ function exportAllProducts($conn) {
 				$product[$key] = $alias;
 			} else if($key == 'lsShopProductRecommendedProducts' || $key == 'associatedProducts') {
 				$prds = unserialize($value);
-				if(sizeof($prds) > 0) {
+				if(is_array($prds) && sizeof($prds) > 0) {
 					$nprds = array();
 					foreach($prds as $prd) {
-						$alias = execute($conn, "SELECT alias FROM tl_ls_shop_product WHERE id='".$prd."'")[0]['alias'];
+						$alias = execute($conn, "SELECT alias FROM tl_ls_shop_product WHERE id='$prd'")[0]['alias'];
 						array_push($nprds, $alias);
 					}
 					$prds = serialize($nprds);
