@@ -11,7 +11,7 @@
 			$this->Template->sts = 'Status: Warten auf Upload';
 			$this->checkUpload();
 			$this->checkImport();
-            if($_GET['validate' === 'sp']) {
+            if($_GET['validate'] === 'sp') {
                 $this->Template->sts = 'Validation about to start';
                 $conn = \Database::getInstance();
                 $response = $conn->prepare("SELECT id, scalePrice FROM tl_ls_shop_product;")->execute();
