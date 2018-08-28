@@ -6,12 +6,25 @@
 		
 		protected function compile() 
 		{
-			//$this->import("Database");
+			$this->import("Database");
 
 			$this->Template->sts = 'Status: Warten auf Upload';
 			$this->checkUpload();
 			$this->checkImport();
-
+            if($_GET['validate' === 'sp']) {
+                $this->Template->sts = 'Validation about to start';
+                $conn = \Database::getInstance();
+                $response = $conn->prepare("SELECT id, scalePrice FROM tl_ls_shop_product;")->execute();
+                $array = $response->fetchAllAssoc();
+                $i = 0;
+                foreach($array as $row) {
+                    $id = $row['id'];
+                    $scalePrice = json_encode(unserialize($row['scalePrice']));
+                    $conn->prepare("UPDATE tl_ls_shop_product SET scalePrice='$scalePrice' WHERE id='$id';")->execute();
+                    $i++;
+                }
+                $this->Template->sts = 'Validated '.$i.' scale prices';
+            }
 		}
 
 		public function checkUpload() {
