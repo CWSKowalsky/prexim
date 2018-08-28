@@ -36,11 +36,12 @@
                     $nscalePrice = [];
                     $j = 1;
                     $key = '';
+                    $subarray = [];
                     foreach($scalePrice as $elm) {
+                        array_push($subarray, $elm);
                         if($j % 2 == 0) {   //even
-                            $nscalePrice[$key] = $elm;
-                        } else {    //odd
-                            $key = $elm;
+                            array_push($nscalePrice, $subarray);
+                            $subarray = [];
                         }
                         $j++;
                     }
